@@ -36,7 +36,6 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT/usr/lib64
 cp bazel-bin/tensorflow/*.so $RPM_BUILD_ROOT/usr/lib64
-
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/tensorflow
 
 cp -r bazel-genfiles/tensorflow/* $RPM_BUILD_ROOT%{_includedir}/tensorflow
