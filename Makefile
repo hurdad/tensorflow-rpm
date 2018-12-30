@@ -20,7 +20,7 @@ mkdir: clean
 
 download: mkdir
 	curl -L -o rpmbuild/SOURCES/$(full_name).tar.gz $(download_url); 
-
+	
 rpm: download
 	rpmbuild $(RPM_OPTS) \
 	  --define "_topdir %(pwd)" \

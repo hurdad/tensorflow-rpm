@@ -5,7 +5,7 @@ Summary:        An Open Source Machine Learning Framework for Everyone
 License:        Apache 2
 Group:          Development/Libraries/C and C++
 Url:            https://www.tensorflow.org/
-Source:         %{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  patch
 
@@ -17,27 +17,27 @@ Summary:    Development headers and library for %{name}
 Group:      Development/Libraries
 Requires:   %{name}%{?_isa} = %{version}-%{release}
 Requires:   eigen3-devel
-Requires:   protobuf-devel
+Requires:   protobuf-devel >= 3.6.0
 Requires:   abseil-cpp-devel
 
 %description devel
-This package contains the development headers and library for %{name}.
+This package contains the development headers for %{name}.
 
 %prep
 %setup -n %{name}-%{version}
 
 %build
 bazel clean
-bazel build --define=grpc_no_ares=true --copt=-msse4.2 --copt=-mavx2 //tensorflow:libtensorflow.so
-bazel build --define=grpc_no_ares=true --copt=-msse4.2 --copt=-mavx2 //tensorflow:libtensorflow_cc.so
+bazel build --define=grpc_no_ares=true --copt=-mavx2 --define framework_shared_object=true //tensorflow:libtensorflow.so
+bazel build --define=grpc_no_ares=true --copt=-mavx2 --define framework_shared_object=true //tensorflow:libtensorflow_cc.so
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT/usr/lib64
 cp bazel-bin/tensorflow/*.so $RPM_BUILD_ROOT/usr/lib64
-mkdir -p $RPM_BUILD_ROOT%{_includedir}/tensorflow
 
+mkdir -p $RPM_BUILD_ROOT%{_includedir}/tensorflow
 cp -r bazel-genfiles/tensorflow/* $RPM_BUILD_ROOT%{_includedir}/tensorflow
 cp -r tensorflow/c $RPM_BUILD_ROOT%{_includedir}/tensorflow
 cp -r tensorflow/cc $RPM_BUILD_ROOT%{_includedir}/tensorflow
@@ -59,7 +59,9 @@ ldconfig
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README.md AUTHORS ACKNOWLEDGMENTS
-%{_libdir}/lib*.so
+%{_libdir}/libtensorflow.so
+%{_libdir}/libtensorflow_cc.so
+%{_libdir}/libtensorflow_framework.so
 
 %files devel
 %defattr(-,root,root,-)
