@@ -1,5 +1,5 @@
 Name:           tensorflow
-Version:		%{VERSION}
+Version:	%{VERSION}
 Release:        %{RELEASE}%{?dist}
 Summary:        An Open Source Machine Learning Framework for Everyone 
 License:        Apache 2
@@ -28,8 +28,8 @@ This package contains the development headers for %{name}.
 
 %build
 bazel clean
-bazel build --define=grpc_no_ares=true --copt=-mavx2 --define framework_shared_object=true //tensorflow:libtensorflow.so
-bazel build --define=grpc_no_ares=true --copt=-mavx2 --define framework_shared_object=true //tensorflow:libtensorflow_cc.so
+bazel build --define=grpc_no_ares=true --copt=-mavx2 --copt=-O2 --define framework_shared_object=true //tensorflow:libtensorflow.so
+bazel build --define=grpc_no_ares=true --copt=-mavx2 --copt=-O2 --define framework_shared_object=true //tensorflow:libtensorflow_cc.so
 
 %install
 rm -rf $RPM_BUILD_ROOT
