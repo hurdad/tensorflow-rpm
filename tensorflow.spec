@@ -28,14 +28,15 @@ This package contains the development headers for %{name}.
 
 %build
 bazel clean
-bazel build --define=grpc_no_ares=true --copt=-mavx2 --copt=-O2 --define framework_shared_object=true //tensorflow:libtensorflow.so
-bazel build --define=grpc_no_ares=true --copt=-mavx2 --copt=-O2 --define framework_shared_object=true //tensorflow:libtensorflow_cc.so
+bazel build --copt=-mavx2 --copt=-O2 --define framework_shared_object=true //tensorflow:libtensorflow.so
+bazel build --copt=-mavx2 --copt=-O2 --define framework_shared_object=true //tensorflow:libtensorflow_cc.so
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT/usr/lib64
-cp bazel-bin/tensorflow/*.so $RPM_BUILD_ROOT/usr/lib64
+rm -f bazel-bin/tensorflow/*.params
+cp bazel-bin/tensorflow/*.so* $RPM_BUILD_ROOT/usr/lib64
 
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/tensorflow
 cp -r bazel-genfiles/tensorflow/* $RPM_BUILD_ROOT%{_includedir}/tensorflow
@@ -59,12 +60,11 @@ ldconfig
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README.md AUTHORS ACKNOWLEDGMENTS
-%{_libdir}/libtensorflow.so
-%{_libdir}/libtensorflow_cc.so
-%{_libdir}/libtensorflow_framework.so
+%{_libdir}/lib*.so.*
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/tensorflow/*
+%{_libdir}/lib*.so
 
 %changelog

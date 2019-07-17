@@ -1,5 +1,5 @@
 # tensorflow
-version = 1.10.0
+version = 1.14.0
 release = 1
 name = tensorflow
 full_name = $(name)-$(version)
