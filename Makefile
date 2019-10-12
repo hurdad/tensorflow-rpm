@@ -1,5 +1,5 @@
 # tensorflow
-version = 1.14.0
+version = 2.0.0
 release = 1
 name = tensorflow
 full_name = $(name)-$(version)
@@ -22,6 +22,7 @@ download: mkdir
 	curl -L -o rpmbuild/SOURCES/$(full_name).tar.gz $(download_url); 
 	
 rpm: download
+	cp third_party.tensorflow-$(version).tar.gz rpmbuild/SOURCES
 	rpmbuild $(RPM_OPTS) \
 	  --define "_topdir %(pwd)" \
 	  --define "_builddir %{_topdir}/rpmbuild/BUILD" \

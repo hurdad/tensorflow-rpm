@@ -8,6 +8,7 @@ Url:            https://www.tensorflow.org/
 Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  patch
+BuildRequires:  python36
 
 %description
 TensorFlow is an open source software library for numerical computation using data flow graphs.
@@ -16,20 +17,18 @@ TensorFlow is an open source software library for numerical computation using da
 Summary:    Development headers and library for %{name}
 Group:      Development/Libraries
 Requires:   %{name}%{?_isa} = %{version}-%{release}
-Requires:   eigen3-devel
-Requires:   protobuf-devel = 3.7.1
-Requires:   abseil-cpp-devel
 
 %description devel
 This package contains the development headers for %{name}.
 
 %prep
 %setup -n %{name}-%{version}
+cp %{_topdir}/.tf_configure.bazelrc %{_builddir}/tensorflow-%{version}
 
 %build
 bazel clean
-bazel build --copt=-mavx2 --copt=-O2 --define framework_shared_object=false //tensorflow:libtensorflow.so
-bazel build --copt=-mavx2 --copt=-O2 --define framework_shared_object=false //tensorflow:libtensorflow_cc.so
+bazel build --config=opt --define framework_shared_object=false //tensorflow:libtensorflow.so
+bazel build --config=opt --define framework_shared_object=false //tensorflow:libtensorflow_cc.so
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -39,14 +38,18 @@ rm -f bazel-bin/tensorflow/*.params
 cp -P bazel-bin/tensorflow/*.so* $RPM_BUILD_ROOT/usr/lib64
 
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/tensorflow
-cp -r bazel-genfiles/tensorflow/* $RPM_BUILD_ROOT%{_includedir}/tensorflow
+
 cp -r tensorflow/c $RPM_BUILD_ROOT%{_includedir}/tensorflow
 cp -r tensorflow/cc $RPM_BUILD_ROOT%{_includedir}/tensorflow
 cp -r tensorflow/core $RPM_BUILD_ROOT%{_includedir}/tensorflow
+
+cp -r bazel-genfiles/tensorflow/c $RPM_BUILD_ROOT%{_includedir}/tensorflow
+cp -r bazel-genfiles/tensorflow/cc $RPM_BUILD_ROOT%{_includedir}/tensorflow
+cp -r bazel-genfiles/tensorflow/core $RPM_BUILD_ROOT%{_includedir}/tensorflow
+
 find $RPM_BUILD_ROOT%{_includedir}/tensorflow -type f ! -name "*.h" -delete
 
-mkdir -p $RPM_BUILD_ROOT%{_includedir}/tensorflow/third_party/eigen3
-cp -r third_party/eigen3 $RPM_BUILD_ROOT%{_includedir}/tensorflow/third_party
+tar -zxvf %{_topdir}/third_party.%{name}-%{version}.tar.gz --directory $RPM_BUILD_ROOT%{_includedir}/tensorflow/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
